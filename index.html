@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b6b3a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Read & Grow">
+<title>Read & Grow Ghana</title>
+<meta name="description" content="Read & Grow Ghana: stories, learning, quizzes and read-aloud for children and families.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf6e9; --card:#ffffff; --ink:#1d2a22; --muted:#5d6b62;
+  --green:#0b6b3a; --gold:#f2b705; --red:#c8322b; --soft:#e4f2e8; --line:#e6dfcb;
+  --head:'Baloo 2','Trebuchet MS',sans-serif; --body:'Nunito',Arial,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --card:#18231c; --ink:#eef3ee; --muted:#9db0a3; --soft:#1f3226; --line:#2a3a30; --green:#34b86f;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+header{position:sticky;top:0;z-index:5;background:var(--green);color:#fff;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;justify-content:space-between}
+header h1{margin:0;font-family:var(--head);font-size:22px;font-weight:800}
+.kente{height:7px;background:repeating-linear-gradient(90deg,var(--gold) 0 18px,var(--red) 18px 30px,#111 30px 38px,var(--green) 38px 56px)}
+.icon-btn{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:50%;width:40px;height:40px;font-size:19px}
+main{max-width:760px;margin:0 auto;padding:16px}
+.view{display:none}.view.on{display:block}
+h2{font-family:var(--head);font-size:26px;margin:6px 0 10px}
+h3{font-family:var(--head);margin:6px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.btn{background:var(--gold);color:#201800;border:0;border-radius:12px;padding:12px 18px;font:800 16px var(--body)}
+.btn.alt{background:var(--soft);color:var(--green)}
+.search{width:100%;padding:14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 16px var(--body);margin-bottom:12px}
+.tag{display:inline-block;background:var(--soft);color:var(--green);border-radius:20px;padding:3px 10px;font-size:13px;font-weight:800}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.story p{color:var(--muted);margin:6px 0 12px}
+.save{background:none;border:0;font-size:24px;padding:4px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:6}
+nav button{flex:1;background:none;border:0;padding:9px 2px 8px;color:var(--muted);font:800 12px var(--body)}
+nav button span{display:block;font-size:22px}
+nav button.on{color:var(--green)}
+.reader h2{font-size:30px}
+.reader .text p{line-height:1.8;font-size:var(--fs,19px);margin:0 0 16px;padding:4px 8px;border-left:5px solid transparent;border-radius:8px;transition:background .2s}
+.reader .text p.speaking{background:var(--soft);border-left-color:var(--gold)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px;align-items:center}
+.tools select{padding:11px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:800 15px var(--body)}
+.moral{background:var(--soft);border-left:6px solid var(--gold);border-radius:12px;padding:14px;margin-top:10px}
+.q{margin:14px 0}.q b{display:block;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 16px var(--body)}
+.opt.right{border-color:var(--green);background:var(--soft)}
+.opt.wrong{border-color:var(--red)}
+#score{font:800 20px var(--head);color:var(--green);text-align:center;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:10px}
+.grid.big{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.tile{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 4px;text-align:center;font:800 24px var(--head);color:var(--ink)}
+.tile small{display:block;font:700 12px var(--body);color:var(--muted)}
+.tile .em{display:block;font-size:34px;line-height:1.1}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
+.tabs button{white-space:nowrap}
+.tabs button.on{background:var(--green);color:#fff}
+.msg{text-align:center;color:var(--muted);padding:24px 8px}
+
+/* Welcome banner */
+.banner{width:100%;display:block;border-radius:18px;margin-bottom:12px;border:1px solid var(--line)}
+.wbtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 6px;text-align:center}
+.stat b{display:block;font:800 26px var(--head);color:var(--green)}
+.stat small{color:var(--muted);font-weight:700}
+.bar{height:12px;background:var(--soft);border-radius:8px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:var(--gold);border-radius:8px;transition:width .4s}
+.cont{border-left:6px solid var(--gold)}
+
+/* First-time welcome screen */
+#splash{display:none;position:fixed;inset:0;z-index:50;background:#fbf6e9;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px calc(20px + env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) calc(20px + env(safe-area-inset-left,0px))}
+#splash.on{display:flex}
+#splash img{width:100%;max-width:560px;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+#splash h2{color:#0b6b3a;margin:18px 0 4px;font-size:30px}
+#splash p{color:#5d6b62;margin:0 0 20px;max-width:420px}
+#splash .btn{font-size:19px;padding:14px 38px;border-radius:30px}
+
+/* Install bar */
+#installBar{display:none;position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:7;background:var(--green);color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 6px 20px rgba(0,0,0,.3);align-items:center;gap:10px}
+#installBar.on{display:flex}
+#installBar p{margin:0;flex:1;font-weight:700;font-size:15px;line-height:1.3}
+#installBar .x{background:none;border:0;color:#fff;font-size:22px;padding:4px 8px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:10px 0 20px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Read & Grow Ghana</h1>
+  <button class="icon-btn" id="themeBtn" aria-label="Switch dark mode" onclick="toggleTheme()">🌙</button>
+</header>
+<div class="kente"></div>
+
+<main>
+
+  <section id="home" class="view on">
+    <img class="banner" src="banner.jpg" alt="Welcome to Read and Grow">
+    <div class="wbtns">
+      <button class="btn" onclick="go('stories')">📖 Start reading</button>
+      <button class="btn alt" onclick="surprise()">🎲 Surprise me</button>
+      <button class="btn alt" onclick="go('kids')">🧒 Kids World</button>
+    </div>
+
+    <div id="continueBox"></div>
+
+    <div class="stats">
+      <div class="stat"><b id="stRead">0</b><small>Stories read</small></div>
+      <div class="stat"><b id="stTotal">0</b><small>In library</small></div>
+      <div class="stat"><b id="stSaved">0</b><small>Saved</small></div>
+    </div>
+
+    <div class="card">
+      <h3>Your progress</h3>
+      <p id="progress" style="margin:4px 0 0">Stories read: 0</p>
+      <div class="bar"><i id="progressBar"></i></div>
+    </div>
+
+    <h2>Latest stories</h2>
+    <div id="latest"></div>
+  </section>
+
+  <section id="stories" class="view">
+    <h2>Story library</h2>
+    <input id="q" class="search" type="search" placeholder="Search stories" oninput="renderList()">
+    <div id="list"></div>
+  </section>
+
+  <section id="reader" class="view reader">
+    <button class="btn alt" onclick="stopSpeech();go('stories')">← Back</button>
+    <div id="readerBody"></div>
+  </section>
+
+  <section id="kids" class="view">
+    <h2>Kids World</h2>
+    <p class="msg" style="padding-top:0">Tap anything to hear it.</p>
+    <div class="tabs">
+      <button class="btn alt" data-k="abc" onclick="kids('abc')">ABC</button>
+      <button class="btn alt" data-k="num" onclick="kids('num')">123</button>
+      <button class="btn alt" data-k="fruit" onclick="kids('fruit')">Fruits</button>
+      <button class="btn alt" data-k="animal" onclick="kids('animal')">Animals</button>
+    </div>
+    <div id="kidsGrid" class="grid"></div>
+  </section>
+
+  <section id="saved" class="view">
+    <h2>Saved stories</h2>
+    <div id="savedList"></div>
+  </section>
+
+</main>
+
+<footer>© 2026 Read & Grow Ghana · Author: Sinnah Ibrahim</footer>
+
+<div id="installBar" role="dialog" aria-label="Install the app">
+  <p id="installText">📲 Get the Read & Grow Ghana app on your phone</p>
+  <button class="btn" id="installBtn" onclick="doInstall()">Install</button>
+  <button class="x" aria-label="Close" onclick="dismissInstall()">✕</button>
+</div>
+
+<div id="splash">
+  <img src="banner.jpg" alt="Welcome to Read and Grow">
+  <h2>Akwaaba!</h2>
+  <p>Stories, quizzes and fun learning for children and families.</p>
+  <button class="btn" onclick="closeSplash()">Get Started</button>
+</div>
+
+<nav>
+  <button data-v="home" class="on" onclick="go('home')"><span>🏠</span>Home</button>
+  <button data-v="stories" onclick="go('stories')"><span>📖</span>Stories</button>
+  <button data-v="kids" onclick="go('kids')"><span>🧒</span>Kids</button>
+  <button data-v="saved" onclick="go('saved')"><span>🔖</span>Saved</button>
+</nav>
+
+<script>
+/* ===== Supabase connection (publishable key is safe to keep here) ===== */
+const SUPABASE_URL = "https://ctlxazdrspvcvfjbtqki.supabase.co";
+const SUPABASE_KEY = "sb_publishable_z3Ivr0EXxFN_glslkuJMBw_zoikmzuO";
+
+/* ===== Small helpers ===== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function store(key, val){
+  try{
+    if(val === undefined){ const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+    localStorage.setItem(key, JSON.stringify(val));
+  }catch(e){ return null; }
+}
+
+let stories = [];
+let saved = store("rg_saved") || [];
+let read = store("rg_read") || [];
+let current = null;
+let loadError = "";
+
+/* ===== Visitor tracking (Supabase "visits" table) ===== */
+function vid(){
+  let v = store("rg_vid");
+  if(!v){
+    v = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + "-" + Math.random().toString(16).slice(2));
+    store("rg_vid", v);
+  }
+  return v;
+}
+function track(ev){
+  try{
+    fetch(SUPABASE_URL + "/rest/v1/visits", {
+      method: "POST",
+      headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ visitor_id: vid(), event: ev })
+    }).catch(() => {});
+  }catch(e){}
+}
+
+/* ===== Load stories ===== */
+async function loadStories(){
+  try{
+    const r = await fetch(SUPABASE_URL + "/rest/v1/stories?select=*&order=id.desc", {
+      headers: { apikey: SUPABASE_KEY }
+    });
+    if(!r.ok) throw new Error("HTTP " + r.status + " " + (await r.text()).slice(0,200));
+    stories = await r.json();
+    store("rg_cache", stories);
+  }catch(e){
+    stories = store("rg_cache") || [];
+    loadError = String(e.message || e);
+  }
+  renderAll();
+}
+
+/* ===== Navigation ===== */
+function go(v){
+  if(v !== "reader") stopSpeech();
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === v));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  window.scrollTo(0,0);
+  if(v === "saved") renderSaved();
+  if(v === "home") renderHome();
+}
+
+/* ===== Theme ===== */
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  $("themeBtn").textContent = t === "dark" ? "☀️" : "🌙";
+  const m = document.querySelector('meta[name="theme-color"]');
+  if(m) m.setAttribute("content", t === "dark" ? "#0f1712" : "#0b6b3a");
+}
+function toggleTheme(){
+  const t = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  store("rg_theme", t);
+  applyTheme(t);
+}
+
+/* ===== First-time welcome screen ===== */
+function closeSplash(){
+  store("rg_seen", 1);
+  $("splash").classList.remove("on");
+}
+
+/* ===== Home ===== */
+function renderHome(){
+  const total = stories.length;
+  const readCount = read.filter(id => stories.some(s => String(s.id) === String(id))).length;
+  $("stRead").textContent = readCount;
+  $("stTotal").textContent = total;
+  $("stSaved").textContent = saved.length;
+  $("progress").textContent = "Stories read: " + readCount + (total ? " of " + total : "");
+  $("progressBar").style.width = (total ? Math.round(readCount / total * 100) : 0) + "%";
+
+  const lastId = store("rg_last");
+  const last = lastId ? stories.find(s => String(s.id) === String(lastId)) : null;
+  $("continueBox").innerHTML = last ? `<div class="card cont">
+      <span class="tag">Continue reading</span>
+      <h3>${esc(last.title)}</h3>
+      <button class="btn" onclick="openStory('${last.id}')">Open story</button>
+    </div>` : "";
+
+  $("latest").innerHTML = stories.slice(0,3).map(card).join("") || '<p class="msg">Stories will appear here.</p>';
+}
+function surprise(){
+  if(!stories.length) return;
+  const unread = stories.filter(s => !read.includes(String(s.id)));
+  const pool = unread.length ? unread : stories;
+  const s = pool[Math.floor(Math.random() * pool.length)];
+  openStory(String(s.id));
+}
+
+/* ===== Story cards ===== */
+function card(s){
+  const isSaved = saved.includes(String(s.id));
+  return `<div class="card story">
+    <div class="row"><span class="tag">${esc(s.category || "Story")}</span>
+    <button class="save" aria-label="Save story" onclick="toggleSave('${s.id}')">${isSaved ? "🔖" : "📑"}</button></div>
+    <h3>${esc(s.title)}</h3>
+    <p>${esc(s.summary || "")}</p>
+    <button class="btn" onclick="openStory('${s.id}')">Read story</button>
+  </div>`;
+}
+function renderList(){
+  const t = $("q").value.trim().toLowerCase();
+  const items = stories.filter(s => (s.title + " " + (s.category||"") + " " + (s.summary||"")).toLowerCase().includes(t));
+  $("list").innerHTML = items.length ? items.map(card).join("") :
+    '<p class="msg">' + (loadError ? "Could not load stories.<br><small>" + esc(loadError) + "</small>" : "No stories found.") + '</p>';
+}
+function renderSaved(){
+  const items = stories.filter(s => saved.includes(String(s.id)));
+  $("savedList").innerHTML = items.length ? items.map(card).join("") : '<p class="msg">Tap 📑 on a story to save it here.</p>';
+}
+function renderAll(){
+  renderList();
+  renderHome();
+}
+function toggleSave(id){
+  saved = saved.includes(id) ? saved.filter(x => x !== id) : [...saved, id];
+  store("rg_saved", saved);
+  renderAll(); renderSaved();
+}
+
+/* ===== Reader ===== */
+let fontSize = 19;
+let paras = [];
+function openStory(id){
+  id = String(id);
+  stopSpeech();
+  current = stories.find(s => String(s.id) === id);
+  if(!current) return;
+  store("rg_last", id);
+  if(!read.includes(id)){ read.push(id); store("rg_read", read); }
+  paras = String(current.content || "").split(/\n+/).map(p => p.trim()).filter(Boolean);
+  let quiz = current.quiz;
+  if(typeof quiz === "string"){ try{ quiz = JSON.parse(quiz); }catch(e){ quiz = null; } }
+  $("readerBody").innerHTML = `
+    <span class="tag">${esc(current.category || "Story")}</span>
+    <h2>${esc(current.title)}</h2>
+    <p style="color:var(--muted);margin:0">By ${esc(current.author || "Sinnah Ibrahim")}</p>
+    <div class="tools">
+      <button class="btn" id="speakBtn" onclick="toggleSpeak()">🔊 Read aloud</button>
+      <button class="btn alt" onclick="stopSpeech()">⏹ Stop</button>
+      <select id="rate" aria-label="Reading speed" onchange="setRate(this.value)">
+        <option value="0.75">🐢 Slow</option>
+        <option value="0.9" selected>🙂 Normal</option>
+        <option value="1.05">🐇 Fast</option>
+      </select>
+      <button class="btn alt" onclick="size(-2)">A−</button>
+      <button class="btn alt" onclick="size(2)">A+</button>
+    </div>
+    ${current.audio_url ? `<audio controls style="width:100%;margin-bottom:12px" src="${esc(current.audio_url)}"></audio>` : ""}
+    <div class="text">${paras.map((p,i) => `<p data-i="${i}">` + esc(p) + "</p>").join("")}</div>
+    ${current.moral ? `<div class="moral"><b>🌱 Moral lesson</b><br>${esc(current.moral)}</div>` : ""}
+    ${Array.isArray(quiz) && quiz.length ? quizHTML(quiz) : ""}
+  `;
+  document.querySelector(".reader .text").style.setProperty("--fs", fontSize + "px");
+  go("reader");
+}
+function size(d){
+  fontSize = Math.min(30, Math.max(15, fontSize + d));
+  document.querySelector(".reader .text").style.setProperty("--fs", fontSize + "px");
+}
+
+/* ===== Read-aloud =====
+   Phones stop or ignore one very long piece of speech, so the story is cut
+   into short sentence chunks that are spoken one after another. */
+const canSpeak = "speechSynthesis" in window;
+let voices = [];
+let chunks = [], ci = 0, playing = false, started = false, rate = 0.9, keep = [], runId = 0;
+
+function loadVoices(){ if(canSpeak) voices = speechSynthesis.getVoices() || []; }
+if(canSpeak){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function pickVoice(){
+  return voices.find(v => /^en[-_]GB/i.test(v.lang)) ||
+         voices.find(v => /^en[-_]/i.test(v.lang)) ||
+         voices.find(v => /^en/i.test(v.lang)) || null;
+}
+function splitLong(s, max){
+  const out = []; let rest = s.trim();
+  while(rest.length > max){
+    let cut = rest.lastIndexOf(",", max);
+    if(cut < 40) cut = rest.lastIndexOf(" ", max);
+    if(cut < 1) cut = max;
+    out.push(rest.slice(0, cut + 1).trim());
+    rest = rest.slice(cut + 1).trim();
+  }
+  if(rest) out.push(rest);
+  return out;
+}
+function buildChunks(){
+  chunks = [{ t: current.title, p: -1 }];
+  paras.forEach((p, pi) => {
+    const sentences = p.match(/[^.!?]+[.!?]+["”')\]]*\s*|[^.!?]+$/g) || [p];
+    let buf = "";
+    sentences.forEach(s => {
+      if(buf && (buf + s).length > 170){ chunks.push({ t: buf.trim(), p: pi }); buf = ""; }
+      if(s.length > 200){ splitLong(s, 170).forEach(x => chunks.push({ t: x, p: pi })); }
+      else buf += s;
+    });
+    if(buf.trim()) chunks.push({ t: buf.trim(), p: pi });
+  });
+}
+function setSpeakLabel(){
+  const b = $("speakBtn"); if(!b) return;
+  b.textContent = playing ? "⏸ Pause" : (started ? "▶ Resume" : "🔊 Read aloud");
+}
+function highlight(pi){
+  document.querySelectorAll(".reader .text p.speaking").forEach(p => p.classList.remove("speaking"));
+  if(pi < 0) return;
+  const el = document.querySelector('.reader .text p[data-i="' + pi + '"]');
+  if(el){ el.classList.add("speaking"); el.scrollIntoView({ block: "center", behavior: "smooth" }); }
+}
+function playFrom(i, id){
+  if(id !== runId) return;
+  if(i >= chunks.length){ finishSpeech(); return; }
+  ci = i;
+  const c = chunks[i];
+  const u = new SpeechSynthesisUtterance(c.t);
+  const v = pickVoice();
+  if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "en-GB";
+  u.rate = rate;
+  u.onstart = () => { if(id === runId) highlight(c.p); };
+  u.onend = () => { if(id === runId && playing) playFrom(i + 1, id); };
+  u.onerror = e => {
+    if(id !== runId) return;
+    if(e && (e.error === "canceled" || e.error === "interrupted")) return;
+    if(playing) playFrom(i + 1, id);
+  };
+  keep.push(u); if(keep.length > 6) keep.shift(); // stops the browser from dropping the utterance
+  speechSynthesis.speak(u);
+}
+function startPlayback(i){
+  runId++;
+  const id = runId;
+  playing = true; started = true;
+  setSpeakLabel();
+  speechSynthesis.cancel();
+  setTimeout(() => {
+    if(id !== runId) return;
+    try{ speechSynthesis.resume(); }catch(e){}
+    playFrom(i, id);
+  }, 150);
+}
+function toggleSpeak(){
+  if(!canSpeak){ alert("Read-aloud is not supported on this device or browser."); return; }
+  if(!current) return;
+  if(playing){
+    // Pause: stop here and remember the place
+    runId++; playing = false;
+    speechSynthesis.cancel();
+    setSpeakLabel();
+    return;
+  }
+  if(!started) buildChunks();
+  startPlayback(started ? ci : 0);
+}
+function setRate(v){
+  rate = parseFloat(v) || 0.9;
+  if(playing) startPlayback(ci); // continue from the same sentence at the new speed
+}
+function finishSpeech(){
+  playing = false; started = false; ci = 0;
+  highlight(-1); setSpeakLabel();
+}
+function stopSpeech(){
+  runId++;
+  playing = false; started = false; ci = 0;
+  if(canSpeak) speechSynthesis.cancel();
+  highlight(-1); setSpeakLabel();
+}
+
+/* ===== Quiz (works with answer as a number or as the answer text) ===== */
+function quizHTML(quiz){
+  return `<h2 style="margin-top:22px">🧠 Quiz</h2>` + quiz.map((q,i) => {
+    const text = q.q || q.question || q.text || q.title || "";
+    const opts = q.options || q.choices || [];
+    let correct = q.answer;
+    if(typeof correct !== "number"){
+      const k = opts.indexOf(correct);
+      correct = k >= 0 ? k : (typeof q.correct === "number" ? q.correct : -1);
+    }
+    return `<div class="q"><b>${i+1}. ${esc(text)}</b>` +
+      opts.map((o,k) => `<button class="opt" onclick="pick(this,${k},${correct})">${esc(o)}</button>`).join("") +
+      `</div>`;
+  }).join("") + `<div id="score"></div>`;
+}
+function pick(btn, k, correct){
+  const box = btn.parentNode;
+  if(box.dataset.done) return;
+  box.dataset.done = "1";
+  box.querySelectorAll(".opt").forEach((o,i) => { if(i === correct) o.classList.add("right"); });
+  if(k === correct) box.dataset.ok = "1"; else btn.classList.add("wrong");
+  const all = document.querySelectorAll(".reader .q");
+  const done = document.querySelectorAll(".reader .q[data-done]").length;
+  const ok = document.querySelectorAll(".reader .q[data-ok]").length;
+  if(done === all.length){
+    $("score").textContent = "⭐ You got " + ok + " out of " + all.length + (ok === all.length ? " — Well done!" : "");
+  }
+}
+
+/* ===== Kids World ===== */
+const KIDS = {
+  abc: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(c => ({ big: c, say: c, sub: c.toLowerCase() })),
+  num: Array.from({length: 20}, (_,i) => ({ big: String(i+1), say: String(i+1) })),
+  fruit: [["🍎","Apple"],["🍌","Banana"],["🍊","Orange"],["🥭","Mango"],["🍍","Pineapple"],["🍉","Watermelon"],["🍇","Grapes"],["🥥","Coconut"],["🍓","Strawberry"],["🍋","Lemon"],["🥑","Avocado"],["🍐","Pear"]]
+    .map(x => ({ em: x[0], say: x[1], sub: x[1] })),
+  animal: [["🐶","Dog"],["🐱","Cat"],["🐄","Cow"],["🐐","Goat"],["🐔","Chicken"],["🐘","Elephant"],["🦁","Lion"],["🐒","Monkey"],["🐍","Snake"],["🐢","Tortoise"],["🐟","Fish"],["🦓","Zebra"]]
+    .map(x => ({ em: x[0], say: x[1], sub: x[1] }))
+};
+function kids(k){
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k));
+  const g = $("kidsGrid");
+  g.className = "grid" + ((k === "fruit" || k === "animal") ? " big" : "");
+  g.innerHTML = KIDS[k].map(it =>
+    `<button class="tile" onclick="say('${it.say}')">` +
+      (it.em ? `<span class="em">${it.em}</span>` : esc(it.big)) +
+      (it.sub ? `<small>${esc(it.sub)}</small>` : "") +
+    `</button>`).join("");
+}
+function say(t){
+  if(!canSpeak) return;
+  stopSpeech();
+  const u = new SpeechSynthesisUtterance(t);
+  const v = pickVoice();
+  if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "en-GB";
+  u.rate = 0.8;
+  keep.push(u); if(keep.length > 6) keep.shift();
+  setTimeout(() => speechSynthesis.speak(u), 60);
+}
+
+/* ===== Install the app ===== */
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if(!store("rg_dismiss_install")){
+    $("installBar").classList.add("on");
+    track("install_prompt_shown");
+  }
+});
+async function doInstall(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  try{ await deferredPrompt.userChoice; }catch(e){}
+  deferredPrompt = null;
+  $("installBar").classList.remove("on");
+}
+function dismissInstall(){
+  store("rg_dismiss_install", 1);
+  $("installBar").classList.remove("on");
+}
+window.addEventListener("appinstalled", () => {
+  $("installBar").classList.remove("on");
+  track("installed");
+});
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+
+/* ===== Start ===== */
+applyTheme(store("rg_theme") || "light");
+kids("abc");
+if(!store("rg_seen")) $("splash").classList.add("on");
+track("visit");
+loadStories();
+</script>
+</body>
+</html>

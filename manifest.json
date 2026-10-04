@@ -1,0 +1,25 @@
+{
+  "name": "Read & Grow Ghana",
+  "short_name": "Read & Grow",
+  "description": "Stories, quizzes and read-aloud for children and families.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf6e9",
+  "theme_color": "#0b6b3a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
